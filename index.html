@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<base target="_top">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Conciliación de fletes · Vázquez</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23246bfd'/%3E%3Cpath d='M7 12h18l-5-5M25 20H7l5 5' fill='none' stroke='white' stroke-width='3'/%3E%3C/svg%3E">
+<style>
+:root{color-scheme:light;--ink:#14213d;--muted:#5e6e88;--line:#e4eaf2;--bg:#f5f7fb;--blue:#246bfd;--green:#087442;--amber:#935800;--red:#b62f35}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Arial,sans-serif}
+main{max-width:1580px;margin:auto;padding:32px 28px 48px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.eyebrow{font-size:12px;letter-spacing:.09em;font-weight:700;color:var(--blue)}
+h1{font-size:30px;letter-spacing:-.8px;line-height:1.2;margin:7px 0 8px}
+h2{font-size:19px;margin:0}
+p{margin:0;color:var(--muted)}
+.updated{font-size:14px}
+button{font:700 14px/1.4 Arial,sans-serif;border:0;border-radius:9px;background:var(--blue);color:white;padding:13px 18px;cursor:pointer;min-height:44px;white-space:nowrap}
+button:disabled{opacity:.55;cursor:not-allowed}
+button.secondary{background:transparent;color:var(--red);border:1px solid var(--line)}
+button.secondary:hover{background:#fff0f0;border-color:var(--red)}
+button:focus-visible,a:focus-visible{outline:3px solid #91baff;outline-offset:3px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.notice{border:1px solid #d5e3ff;border-radius:10px;background:#edf3ff;color:#315582;padding:12px 15px;margin:25px 0 17px;font-size:14px}
+.notice.error{background:#fff0f0;border-color:#efc0c0;color:#a1242b}
+.notice.success{background:#e7f6ed;border-color:#b8e0c9;color:var(--green)}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.card{border:1px solid var(--line);background:white;border-radius:12px;padding:19px 17px;min-height:139px}
+.label{font-size:14px;color:var(--muted)}
+.amount{font-size:25px;font-weight:700;line-height:1.25;margin:11px 0 8px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.card small{font-size:12px;color:var(--muted);display:block}
+.red{color:var(--red)}
+.amber{color:var(--amber)}
+.green{color:var(--green)}
+.summary{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin:22px 0}
+.pill{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none;background:currentColor}
+.tolerance{margin-left:auto;font-size:14px;color:var(--muted)}
+.panel{background:white;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.panel-heading{padding:21px 20px 17px;display:flex;justify-content:space-between;gap:15px;align-items:center}
+.panel-heading p{font-size:14px;margin-top:4px}
+.count{font-size:14px;white-space:nowrap;color:var(--muted)}
+.scroll{overflow:auto;max-height:70vh}
+table{width:100%;border-collapse:separate;border-spacing:0;min-width:1310px;font-size:14px}
+th{position:sticky;top:0;z-index:1;text-align:left;background:#f8faff;color:var(--muted);font-weight:600;font-size:12px;padding:13px 12px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:15px 12px;border-bottom:1px solid #edf0f5;vertical-align:top}
+tbody tr:hover{background:#f8faff}
+tbody tr:last-child td{border-bottom:0}
+.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.mono{white-space:nowrap;font-variant-numeric:tabular-nums}
+.reason{min-width:230px;max-width:360px}
+.state{display:inline-flex;align-items:center;gap:7px;border-radius:30px;padding:4px 9px;font-size:12px;font-weight:700;white-space:nowrap}
+.verde{background:#e7f6ed;color:var(--green)}
+.amarillo{background:#fff1d9;color:var(--amber)}
+.rojo{background:#ffe8e8;color:var(--red)}
+.celeste{background:#dff3ff;color:#07658a}
+a{color:#215cca;text-decoration:none}
+a:hover{text-decoration:underline}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.foot{font-size:12px;color:var(--muted);margin:16px 2px}
+.warnings{padding:14px 18px;background:#fff6e6;color:#815000;border:1px solid #efdaad;border-radius:10px;font-size:14px;margin-bottom:18px}
+.warnings:empty{display:none}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.amount{font-size:23px}}
+@media(max-width:680px){main{padding:22px 16px}.top{flex-direction:column;gap:16px}h1{font-size:26px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.summary{gap:12px}.tolerance{margin-left:0;width:100%}.panel-heading{align-items:flex-start}.amount{font-size:22px}}
+</style>
+</head>
+<body>
+<main>
+
+<header class="top">
+  <div>
+    <div class="eyebrow">PROVEEDOR · VÁZQUEZ ABEL NICOLÁS</div>
+    <h1>Resumen de conciliación</h1>
+    <p id="updated" class="updated">Leyendo datos…</p>
+  </div>
+  <div class="actions">
+    <button id="refresh" type="button">↻ Actualizar conciliación</button>
+    <button id="limpiar" type="button" class="secondary">🗑 Limpiar datos</button>
+  </div>
+</header>
+
+<div id="notice" class="notice" role="status" aria-live="polite">Actualización manual. Compara el neto facturado con el costo de cada viaje.</div>
+
+<section class="cards" aria-label="Resumen de importes">
+  <article class="card">
+    <div class="label">Facturado por Proveedor</div>
+    <div class="amount" id="facturado">—</div>
+    <small>Todos los conceptos extraídos</small>
+  </article>
+  <article class="card">
+    <div class="label">Facturas Conciliadas</div>
+    <div class="amount green" id="costo">—</div>
+    <small>Facturado por Proveedor − No Conciliadas</small>
+  </article>
+  <article class="card">
+    <div class="label">No Conciliadas</div>
+    <div class="amount red" id="noComparable">—</div>
+    <small>Conceptos que no conciliaron</small>
+  </article>
+  <article class="card">
+    <div class="label">Casos para revisar</div>
+    <div class="amount red" id="revisar">—</div>
+    <small>Incidencias detectadas en la conciliación</small>
+  </article>
+</section>
+
+<section class="summary" aria-label="Estados">
+  <span class="pill green"><i class="dot"></i><span id="greenCount">—</span> conciliados</span>
+  <span class="pill red"><i class="dot"></i><span id="redCount">—</span> incidencias</span>
+  <span class="tolerance">Tolerancia por remito: ± $1,00</span>
+</section>
+
+<div id="warnings" class="warnings"></div>
+
+<section class="panel">
+  <div class="panel-heading">
+    <div>
+      <h2>Detalle de conciliación</h2>
+      <p>Facturación y viajes, remito por remito.</p>
+    </div>
+    <span id="count" class="count"></span>
+  </div>
+  <div class="scroll" tabindex="0" role="region" aria-label="Tabla de conciliación, desplazamiento horizontal">
+    <table>
+      <thead>
+        <tr>
+          <th>FACTURA</th>
+          <th>REMITO</th>
+          <th>FECHA</th>
+          <th>ZONA FACTURADA</th>
+          <th>ZONA REAL</th>
+          <th class="num">NETO FACTURADO</th>
+          <th class="num">COSTO AREA LOGISTICA</th>
+          <th class="num">DIFERENCIA</th>
+          <th>SEMÁFORO</th>
+          <th>MOTIVO</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        <tr><td colspan="10" class="empty">Leyendo conciliación…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<p class="foot">La diferencia se muestra en los casos rojos. Un valor positivo indica facturación mayor al costo. "No calculable" indica que no existe una comparación única y válida.</p>
+
+</main>
+
+<script>
+const $ = function(id) { return document.getElementById(id); };
+
+const money = function(n) {
+  return (n === null || n === undefined)
+    ? '—'
+    : new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+};
+
+const signed = function(n) {
+  return (n > 0 ? '+' : '') + money(n);
+};
+
+const escapeHtml = function(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, function(c) {
+    return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
+  });
+};
+
+let latest = null, busy = false;
+
+function paint(d) {
+  latest = d;
+  const r = d.resumen;
+
+  $('facturado').textContent = money(r.facturado);
+  $('costo').textContent = money(r.conciliadas);
+  $('noComparable').textContent = money(r.noConciliadas);
+  $('revisar').textContent = r.rojos;
+  $('greenCount').textContent = r.verdes;
+  $('redCount').textContent = r.rojos;
+  $('count').textContent = r.total + ' conceptos';
+
+  const stamp = d.actualizado
+    ? new Date(d.actualizado).toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' })
+    : 'Sin lectura';
+  $('updated').textContent = 'Última lectura: ' + stamp;
+
+  $('notice').className = 'notice';
+  $('notice').textContent = 'Actualización manual. El botón lee nuevos PDF y concilia contra Viajes_Origen.';
+
+  $('warnings').textContent = (d.avisos || [])
+    .map(function(x) { return 'Factura ' + x.factura + ': ' + x.motivo; })
+    .join(' · ') + (r.importesInvalidos ? ' Hay importes inválidos excluidos de los totales.' : '');
+
+  $('rows').innerHTML = d.rows.length
+    ? d.rows.map(function(x) {
+        const invoice = escapeHtml(x.factura || 'Sin factura');
+        const link = /^https:\/\/drive\.google\.com\//.test(x.pdf || '')
+          ? '<a href="' + escapeHtml(x.pdf) + '" target="_blank" rel="noopener noreferrer">' + invoice + '</a>'
+          : invoice;
+        const diff = x.semaforo === 'rojo'
+          ? (x.diferencia == null ? 'No calculable' : signed(x.diferencia))
+          : '—';
+        return '<tr>' +
+          '<td class="mono">' + link + '</td>' +
+          '<td class="mono">' + escapeHtml(x.remito || 'Sin remito') + '</td>' +
+          '<td class="mono">' + escapeHtml(x.fecha || '—') + '</td>' +
+          '<td>' + escapeHtml(x.zonaFacturada || 'No identificada') + '</td>' +
+          '<td>' + escapeHtml(x.zonaReal || 'No identificada') + '</td>' +
+          '<td class="num">' + money(x.neto) + '</td>' +
+          '<td class="num">' + money(x.costo) + '</td>' +
+          '<td class="num ' + (x.semaforo === 'rojo' ? 'red' : '') + '">' + diff + '</td>' +
+          '<td><span class="state ' + x.semaforo + '"><i class="dot"></i>' +
+            ({ verde: 'Conciliado', amarillo: 'Revisar zona', rojo: 'Incidencia', celeste: 'Mov Interno' })[x.semaforo] +
+          '</span></td>' +
+          '<td class="reason">' + escapeHtml(x.motivo) + '</td>' +
+          '</tr>';
+      }).join('')
+    : '<tr><td colspan="10" class="empty">No hay conceptos facturados para conciliar.</td></tr>';
+}
+
+function fail(e) {
+  $('notice').className = 'notice error';
+  $('notice').textContent = 'No se pudo completar la conciliación: ' + (e.message || String(e)) + (latest ? ' Se conserva la última lectura visible.' : '');
+  if (!latest) {
+    $('rows').innerHTML = '<tr><td colspan="10" class="empty">Lectura no disponible.</td></tr>';
+  }
+}
+
+function call(name) {
+  return new Promise(function(resolve, reject) {
+    if (!window.google || !window.google.script || !window.google.script.run) {
+      return reject(new Error('La conexión con Google Sheets requiere ejecutar el panel desde Apps Script.'));
+    }
+    google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[name]();
+  });
+}
+
+async function refresh() {
+  if (busy) throw new Error('Ya hay una conciliación en curso.');
+  busy = true;
+  $('refresh').disabled = true;
+  $('limpiar').disabled = true;
+  $('refresh').textContent = 'Actualizando…';
+  $('notice').className = 'notice';
+  $('notice').textContent = 'Procesando facturas y conciliando viajes…';
+  try {
+    const d = await call('actualizarPanelWeb');
+    paint(d);
+    if (d.pendientes) {
+      $('notice').className = 'notice error';
+      $('notice').textContent = 'Quedaron PDFs sin leer por límite de tiempo. Volvé a apretar "Actualizar conciliación" para seguir con el resto.';
+    }
+    return { resumen: d.resumen, actualizado: d.actualizado };
+  } catch (e) {
+    fail(e);
+    throw e;
+  } finally {
+    busy = false;
+    $('refresh').disabled = false;
+    $('limpiar').disabled = false;
+    $('refresh').textContent = '↻ Actualizar conciliación';
+  }
+}
+
+async function limpiarDatos() {
+  if (busy) return;
+  if (!confirm('¿Borrar TODOS los datos de las hojas del Sheet?\n\nEsto limpia: Log, Facturas_Vazquez, Remitos_Vazquez, Cruce_Vazquez y Excepciones. También mueve los PDFs de la carpeta a _PROCESADOS.\n\nEsta acción no se puede deshacer.')) return;
+  if (!confirm('¿Estás SEGURO?\n\nConfirmá una vez más.')) return;
+
+  busy = true;
+  $('limpiar').disabled = true;
+  $('refresh').disabled = true;
+  $('limpiar').textContent = 'Limpiando…';
+  $('notice').className = 'notice';
+  $('notice').textContent = 'Limpiando datos...';
+
+  try {
+    const res = await call('limpiarDatosViejos');
+    if (res && res.ok) {
+      // ✅ Limpiar el panel también
+      latest = null;
+      $('facturado').textContent = '—';
+      $('costo').textContent = '—';
+      $('noComparable').textContent = '—';
+      $('revisar').textContent = '—';
+      $('greenCount').textContent = '—';
+      $('redCount').textContent = '—';
+      $('count').textContent = '';
+      $('warnings').textContent = '';
+      $('updated').textContent = 'Sin lectura';
+      $('rows').innerHTML = '<tr><td colspan="10" class="empty">Sin datos. Cargá PDFs y ejecutá "Actualizar conciliación".</td></tr>';
+
+      $('notice').className = 'notice success';
+      $('notice').textContent = '✓ Datos limpiados correctamente. PDFs movidos: ' + (res.pdfsMovidos || 0) + '.';
+    } else {
+      $('notice').className = 'notice';
+      $('notice').textContent = 'Limpieza ejecutada.';
+    }
+  } catch (e) {
+    $('notice').className = 'notice error';
+    $('notice').textContent = 'Error al limpiar: ' + (e.message || String(e));
+  } finally {
+    busy = false;
+    $('limpiar').disabled = false;
+    $('refresh').disabled = false;
+    $('limpiar').textContent = '🗑 Limpiar datos';
+  }
+}
+
+$('refresh').addEventListener('click', function() { refresh().catch(function(){}); });
+$('limpiar').addEventListener('click', function() { limpiarDatos().catch(function(){}); });
+
+$('refresh').disabled = true;
+$('limpiar').disabled = true;
+call('obtenerDatosPanelWeb')
+  .then(paint)
+  .catch(fail)
+  .then(function() {
+    $('refresh').disabled = false;
+    $('limpiar').disabled = false;
+  });
+</script>
+</body>
+</html>
